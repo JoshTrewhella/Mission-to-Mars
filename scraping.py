@@ -106,13 +106,19 @@ def mars_hemispheres(browser):
 
     for i in range(4):
         try:
-            hemispheres = {}
-            browser.find_by_css('a.product-item h3')[i].click()
-            element = browser.links.find_by_text('Sample').first
-            img_url = element['href']
-            title = browser.find_by_css("h2.title").text
-            hemispheres["img_url"] = img_url
-            hemispheres["title"] = title
+            browser.links.find_by_partial_text('Hemisphere')[i].click()
+            
+            # Parse html with BS
+            html = browser.html
+            img_soup = soup(html,"html.parser")
+            
+            # Scrape image and title
+            img_url_rel = img_soup.find('img', class_="wide-image").get('src')
+            img_url = f'https://marshemispheres.com/{img_url_rel}'
+            title = img_soup.find('h2', class_='title').text
+            
+            # Create dictionary and append to hemisphere_image_urls
+            hemispheres = {'img_url': img_url,'title': title}
             hemisphere_image_urls.append(hemispheres)
             browser.back()
 
